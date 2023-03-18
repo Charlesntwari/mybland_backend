@@ -22,7 +22,9 @@ app.use(fileUploader({ useTempFiles: true }));
 
 //connecting to mongodb
 const dbURI =
-  "mongodb+srv://charles:charles12345@mybland.6hfcna7.mongodb.net/mybland-data?retryWrites=true&w=majority";
+  //  "mongodb+srv://charles:charles12345@mybland.6hfcna7.mongodb.net/mybland-data?retryWrites=true&w=majority";
+   `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@mybland.6hfcna7.mongodb.net/mybland-data?retryWrites=true&w=majority`;
+
 mongoose.connect(dbURI)
 .then((results) => app.listen(8000,() =>console.log('server running on port 8000')))
 .catch((err) => console.log(err));
@@ -65,7 +67,8 @@ app.get("/blogs", async (req, res) => {
   try{
     const allblogs = await Blog.find()
     res.status(200).json({
-      status:'they are found',
+      status:200,
+      message:'they are found',
       data: allblogs
     })
   }
@@ -168,7 +171,7 @@ const signupSchema = Joi.object({
 // });
 // adding user
 
-app.post('/sign-up', checkUser, async (req,res) =>{
+app.post('/signup', checkUser, async (req,res) =>{
   const { error, value } = signupSchema.validate(req.body);
   if (error) {
     return res.status(400).json({ error: error.details[0].message });
@@ -179,7 +182,8 @@ app.post('/sign-up', checkUser, async (req,res) =>{
       let newUser = await User.create(req.body);
       if(!newUser){
       return res.status(404).json({
-        status: "user failed",
+        status: 404,
+        message: "user failed",
         data: newUser,
       });}
       return res.status(201).json({
@@ -200,9 +204,10 @@ app.get("/users", async (req, res) => {
   try{
     const allUsers = await User.find()
     res.status(200).json({
-      status:'users found',
-      data: allUsers
-    })
+      status: 200,
+      message: "users found",
+      data: allUsers,
+    });
   }
   catch (error) {
     console.log(error.message)
@@ -218,10 +223,18 @@ app.get("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const singleUser = await User.findById(id);
+    if (singleUser) {
     res.status(200).json({
-      status: "it is found",
-      data: singleUser
-    });
+      status: 200,
+      massage: "it is found",
+      data: singleUser,
+    })};
+    if (!singleUser) {
+      return res.status(404).json({
+        status: 404,
+        message: "user failed",
+      });
+    }
   } catch (error) {
     console.log(error.message);
     res.status(500).json({
@@ -240,11 +253,13 @@ app.put("/users/:id", async (req, res) => {
     //if we can not find user
     if (!singleUser) {
       return res.status(404).json({
+        status:"failed",
         message: `user not found`,
       });
     }
     res.status(200).json({
-      status: "user found",
+      status:"successful",
+      message: "user found",
       data: singleUser
     });
   } catch (error) {
@@ -265,12 +280,14 @@ app.delete("/users/:id", async (req, res) => {
     //if we can not find user
     if (!singleUser) {
       return res.status(404).json({
-        message: `Bad Request`,
+        status: `failed`,
+        message:"no matching data"
       });
     }
     res.status(200).json({
-      status: "Deleted",
-      data: singleUser
+      status: "successful",
+      message: "Deleted",
+      data: singleUser,
     });
   } catch (error) {
     console.log(error.message);
@@ -281,7 +298,7 @@ app.delete("/users/:id", async (req, res) => {
 });
 
 //login
-app.post('/log-in', async (req,res) =>{
+app.post('/login', async (req,res) =>{
   try {
     let { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -291,19 +308,23 @@ app.post('/log-in', async (req,res) =>{
     // });
     if(!user){
       return res.status(400).json({
-        message: 'not matching any user'
+        status: "failed",
+        message: "not matching any user",
       });
     }
     if (isPasswordMatching(password, user.password)) {
       user.password = null;
       const token = generateToken({ user });
       return res.status(200).json({
-        message: "logged in succefully",
+        status: "successful",
+        message: "logged in",
         token,
+        data: user,
       });
     } else {
-      return res.status(400).json({ 
-        message: "incorrect password" 
+      return res.status(400).json({
+        status: "failed",
+        message: "incorrect password",
       });
     }
   }catch (error) {
@@ -316,7 +337,7 @@ app.post('/log-in', async (req,res) =>{
 
 //Query
 
-// adding user
+// adding querry
 
 app.post('/querry', async (req,res) =>{
   const { error, value } = querrySchema.validate(req.body);
@@ -327,7 +348,8 @@ app.post('/querry', async (req,res) =>{
     try {
       let newQuerry = await Querry.save();
       res.status(201).json({
-        status: "Querry sent successfully",
+        status: "successful",
+        message: "Querry sent successfully",
         data: newQuerry,
       });
     } catch (error) {
@@ -344,9 +366,10 @@ app.get("/querries", async (req, res) => {
   try{
     const allQuerries = await Querry.find()
     res.status(200).json({
-      status:'All Querries found successfully',
-      data: allQuerries
-    })
+      status: "successful",
+      message: "All Querries found successfully",
+      data: allQuerries,
+    });
   }
   catch (error) {
     console.log(error.message)
@@ -363,8 +386,9 @@ app.get("/querries/:id", async (req, res) => {
     const { id } = req.params;
     const singleQuerry = await Querry.findById(id);
     res.status(200).json({
+      message: "successful",
       status: "it is found",
-      data: singleQuerry
+      data: singleQuerry,
     });
   } catch (error) {
     console.log(error.message);
@@ -384,11 +408,13 @@ app.delete("/querries/:id", async (req, res) => {
     //if querry not found
     if (!singleQuerry) {
       return res.status(404).json({
+        status:"failed",
         message: `querry not found`,
       });
     }
     res.status(200).json({
-      status: "Deleted",
+      status:"successful",
+      message: "Deleted",
       data: singleQuerry
     });
   } catch (error) {
@@ -398,3 +424,5 @@ app.delete("/querries/:id", async (req, res) => {
     });
   }
 });
+
+module.exports = app;
