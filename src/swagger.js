@@ -22,7 +22,7 @@ const options = {
     { name: "Querries", description: "Querries" },
   ],
   paths: {
-    "/sign-up": {
+    "/signup": {
       post: {
         tags: ["Users"],
         description: "User signUp",
@@ -57,7 +57,7 @@ const options = {
         },
       },
     },
-    "/log-in": {
+    "/login": {
       post: {
         tags: ["Users"],
         description: "User login",
@@ -427,7 +427,7 @@ const options = {
               example: {
                 name: "fullname",
                 email: "example@gmail.com",
-                username: "nice work",
+                message: "nice work",
               },
             },
           },

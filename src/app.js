@@ -13,9 +13,11 @@ const { protect } = require("./authorization");
 const {checkUser} = require("./validate");
 const { generateToken } =require( "./token");
 const {isPasswordMatching} = require("./hashed");
+const cors =require("cors");
 
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use("/mybrand", document);
 app.use(fileUploader({ useTempFiles: true }));
@@ -51,7 +53,10 @@ app.post("/blog", protect, async (req, res) => {
           data: blog,
         });
       } else {
-        res.status(401).json({ message: "User Not Authorized to create blog" });
+        res.status(401).json({
+          status:401,
+          message: "User Not Authorized to create blog"
+        });
       }
     } catch (error) {
       console.log(error.message);
@@ -86,8 +91,15 @@ app.get("/blogs/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const oneblog = await Blog.findById(id);
+    if (!oneblog) {
+      return res.status(404).json({
+        status: 404,
+        message: `blog not found`,
+      });
+    }
     res.status(200).json({
-      status: "it is found",
+      status: 200,
+      message:"it is found",
       data: oneblog
     });
   } catch (error) {
@@ -108,11 +120,13 @@ app.put("/blogs/:id", async (req, res) => {
     //if we can not find the blog
     if (!oneblog) {
       return res.status(404).json({
+        status:404,
         message: `blog not found`
       });
     }
     res.status(200).json({
-      status: "Blog is found",
+      status:200,
+      message: "Blog is found",
       data: oneblog,
     });
   } catch (error) {
@@ -133,11 +147,13 @@ app.delete("/blogs/:id", async (req, res) => {
     //if we can not find the blog
     if (!oneblog) {
       return res.status(404).json({
+        status:404,
         message: `blog not found`
       });
     }
     res.status(200).json({
-      status: "blog Deleted"
+      status:200,
+      message: "blog Deleted"
     });
   } catch (error) {
     console.log(error.message);
@@ -164,11 +180,12 @@ const signupSchema = Joi.object({
   password: Joi.string().min(3).max(500).required(),
 });
  
-// const querrySchema = Joi.object({
-//   name: Joi.string().min(3).max(50).required(),
-//   email: Joi.string().email().required(),
-//   message: Joi.string().min(3).max(50).required(),
-// });
+const querrySchema = Joi.object({
+  name: Joi.string().min(3).max(50).required(),
+  email: Joi.string().email().required(),
+  message: Joi.string().min(3).max(50).required(),
+});
+
 // adding user
 
 app.post('/signup', checkUser, async (req,res) =>{
@@ -184,10 +201,10 @@ app.post('/signup', checkUser, async (req,res) =>{
       return res.status(404).json({
         status: 404,
         message: "user failed",
-        data: newUser,
       });}
       return res.status(201).json({
-        status: "user created successful",
+        status: 201,
+        message: "user created successful",
         data: newUser,});
     } catch (error) {
       console.log(error.message);
@@ -253,12 +270,12 @@ app.put("/users/:id", async (req, res) => {
     //if we can not find user
     if (!singleUser) {
       return res.status(404).json({
-        status:"failed",
+        status:404,
         message: `user not found`,
       });
     }
     res.status(200).json({
-      status:"successful",
+      status:200,
       message: "user found",
       data: singleUser
     });
@@ -302,13 +319,9 @@ app.post('/login', async (req,res) =>{
   try {
     let { email, password } = req.body;
     const user = await User.findOne({ email });
-    // let user = await User.findOne({
-    //   email,
-    //   password
-    // });
     if(!user){
-      return res.status(400).json({
-        status: "failed",
+      return res.status(404).json({
+        status: 404,
         message: "not matching any user",
       });
     }
@@ -316,14 +329,14 @@ app.post('/login', async (req,res) =>{
       user.password = null;
       const token = generateToken({ user });
       return res.status(200).json({
-        status: "successful",
-        message: "logged in",
+        status: 200,
+        message: "logged in successfully",
         token,
         data: user,
       });
     } else {
       return res.status(400).json({
-        status: "failed",
+        status: 404,
         message: "incorrect password",
       });
     }
@@ -346,9 +359,9 @@ app.post('/querry', async (req,res) =>{
   }
   const { name, email, message } = value;
     try {
-      let newQuerry = await Querry.save();
+      let newQuerry = await Querry.create(req.body);
       res.status(201).json({
-        status: "successful",
+        status: 201,
         message: "Querry sent successfully",
         data: newQuerry,
       });
@@ -366,7 +379,7 @@ app.get("/querries", async (req, res) => {
   try{
     const allQuerries = await Querry.find()
     res.status(200).json({
-      status: "successful",
+      status: 200,
       message: "All Querries found successfully",
       data: allQuerries,
     });
@@ -385,9 +398,15 @@ app.get("/querries/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const singleQuerry = await Querry.findById(id);
+    if (!singleQuerry) {
+      return res.status(404).json({
+        status: 404,
+        message: `querry not found`,
+      });
+    }
     res.status(200).json({
-      message: "successful",
-      status: "it is found",
+      status: 200,
+      message: "it is found",
       data: singleQuerry,
     });
   } catch (error) {
@@ -408,12 +427,12 @@ app.delete("/querries/:id", async (req, res) => {
     //if querry not found
     if (!singleQuerry) {
       return res.status(404).json({
-        status:"failed",
+        status:404,
         message: `querry not found`,
       });
     }
     res.status(200).json({
-      status:"successful",
+      status:200,
       message: "Deleted",
       data: singleQuerry
     });

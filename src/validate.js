@@ -10,7 +10,7 @@ const checkUser = async (req, res, next) => {
     return next();
   }
   return res.status(409).json({
-    status: "user already exist",
+    message: "user already exist",
   });
 };
 module.exports = { checkUser };
