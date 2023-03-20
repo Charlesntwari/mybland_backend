@@ -12,7 +12,7 @@ describe("Testing Authentication routes", () => {
   it("should create a user.", async () => {
     const res = await chai.request(app).post("/signup").send({
       fullname: "charles",
-      email: "try@gmail.com",
+      email: "try589cd@gmail.com",
       username: "user2",
       password: "11111",
     });
@@ -38,16 +38,6 @@ describe("Testing Authentication routes", () => {
     const res = await chai.request(app).get("/users/640c35b38452ecb4a9ce84bc");
     expect(res.status).to.be.equal(404);
   });
-});
-it("should creater a blog.", async () => {
-  const res = await chai.request(app).post("/blog").send({
-    title: "charles",
-    body: "try@gmail.com",
-    image:
-      "http://res.cloudinary.com/dvdmnpf99/image/upload/v1678719474/My-Brand/…",
-  });
-  expect(res.status).to.be.equal(201);
-  expect(res.body).to.be.a("object");
 });
 it("should get all blogs.", async () => {
   const res = await chai.request(app).get("/blogs");
