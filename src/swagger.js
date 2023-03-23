@@ -173,7 +173,7 @@ const options = {
       },
     },
 
-    "/users/id": {
+    "/users/{id}": {
       delete: {
         tags: ["Users"],
         description: "Delete User by Id",
@@ -277,9 +277,6 @@ const options = {
           },
         },
       },
-    },
-
-    "/blogs/:id": {
       put: {
         tags: ["Blog"],
         description: "Update blog article",
@@ -292,13 +289,9 @@ const options = {
         ],
         requestBody: {
           content: {
-            "application/json": {
+            "multipart/form-data": {
               schema: {
                 $ref: "#/components/schemas/Blog",
-              },
-              example: {
-                title: "testing blog article title update",
-                body: "testing blog article content update",
               },
             },
           },
@@ -319,9 +312,6 @@ const options = {
           },
         },
       },
-    },
-
-    "/blogs/id": {
       delete: {
         tags: ["Blog"],
         description: "Delete blog article",
@@ -358,15 +348,25 @@ const options = {
         },
       },
     },
-    "/blog/:id/comment": {
+    "/blogs/{id}/comment": {
       post: {
         tags: ["Blog"],
-        description: "adding comment ",
+        description: "Comment on article blog article",
+        parameters: [
+          {
+            in: "path",
+            name: "article_id",
+            required: true,
+          },
+        ],
         requestBody: {
           content: {
             "application/json": {
               schema: {
                 $ref: "#/components/schemas/Blog",
+              },
+              example: {
+                comment: "that content is very helpful thanks",
               },
             },
           },
@@ -377,7 +377,10 @@ const options = {
             description: "successfully",
           },
           401: {
-            description: "User Not Authorized to add comment",
+            description: "Not Authorized",
+          },
+          404: {
+            description: "Article doesn't exist!",
           },
           500: {
             description: "Internal Server Error",
@@ -385,10 +388,16 @@ const options = {
         },
       },
     },
-    "/blog/:id/like": {
+    "/blogs/{id}/like": {
       post: {
         tags: ["Blog"],
-        description: "add like ",
+        description: "Like on  blog ",
+        parameters: [
+          {
+            in: "path",
+            name: "blog_id",
+          },
+        ],
         requestBody: {
           content: {
             "application/json": {
@@ -397,14 +406,16 @@ const options = {
               },
             },
           },
-          required: true,
         },
         responses: {
           200: {
             description: "successfully",
           },
           401: {
-            description: "User Not Authorized to add like",
+            description: "Not Authorized",
+          },
+          404: {
+            description: "Article doesn't exist!",
           },
           500: {
             description: "Internal Server Error",
