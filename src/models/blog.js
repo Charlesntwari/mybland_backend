@@ -17,17 +17,12 @@ const blogSchema = new Schema({
   comments: [
     {
       user_id: {
-        type: mongoose.Schema.ObjectId,
-        required: true,
-        ref: "User",
-      },
-      email: {
-        type: String,
-        required: true,
+        type:String,
+        required: true
       },
       comment: {
         type: String,
-        required: [true, "Please add a comment"],
+        required: true,
       },
       postedDate: {
         type: String,

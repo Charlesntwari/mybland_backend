@@ -1,9 +1,9 @@
 const chai = require("chai");
 const { expect } = require("chai");
 const chaiHttp = require("chai-http");
-const User = require("../models/user");
+const User = require("../src/models/user");
 const dotenv = require("dotenv/config");
-const app = require("../app");
+const app = require("../src/app");
 chai.expect();
 chai.use(chaiHttp);
 jest.setTimeout(40000);
@@ -12,7 +12,7 @@ describe("Testing Authentication routes", () => {
   it("should create a user.", async () => {
     const res = await chai.request(app).post("/signup").send({
       fullname: "charles",
-      email: "try@gmail.com",
+      email: "try1@gmail.com",
       username: "user2",
       password: "11111",
     });
@@ -21,7 +21,7 @@ describe("Testing Authentication routes", () => {
   });
   it("should login user.", async () => {
     const res = await chai.request(app).post("/login").send({
-      email: "charles@gmail.com",
+      email: "example@gmail.com",
       password: "11111",
     });
     expect(res.status).to.be.equal(200);
@@ -31,7 +31,7 @@ describe("Testing Authentication routes", () => {
     expect(res.status).to.be.equal(200);
   });
   it("should get user by id.", async () => {
-    const res = await chai.request(app).get("/users/640c35b38332ecb4adce84bb");
+    const res = await chai.request(app).get("/users/6411ac3700af4d0f8e169a2a");
     expect(res.status).to.be.equal(200);
   });
   it("should not get user by id.", async () => {
@@ -44,7 +44,7 @@ it("should get all blogs.", async () => {
   expect(res.status).to.be.equal(200);
 });
 it("should get blog by id.", async () => {
-  const res = await chai.request(app).get("/blogs/640a4bd9d7a70ff3d04ebcbd");
+  const res = await chai.request(app).get("/blogs/641af2a6155e89a980c49db1");
   expect(res.status).to.be.equal(200);
 });
 it("should not get blog by id.", async () => {

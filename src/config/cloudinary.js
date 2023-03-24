@@ -5,6 +5,3 @@ cloudinary.config({
   api_secret: "Yu21kLCmdMbBktM0uOXoZ8wNWas",
 });
 module.exports = cloudinary.uploader;
-// cloudinary.config({
-//   cloud_name: "dvdmnpf99",
-//   api_key:
