@@ -355,7 +355,7 @@ const options = {
         parameters: [
           {
             in: "path",
-            name: "article_id",
+            name: "id",
             required: true,
           },
         ],
@@ -366,7 +366,9 @@ const options = {
                 $ref: "#/components/schemas/Blog",
               },
               example: {
+                user_id: "",
                 comment: "that content is very helpful thanks",
+                postedDate: "24/03/2023",
               },
             },
           },
@@ -423,7 +425,7 @@ const options = {
         },
       },
     },
-    "/Querry": {
+    "/querry": {
       post: {
         tags: ["Querries"],
         description: "User querry",
@@ -622,11 +624,3 @@ const options = {
 };
 docrouter.use("/", serve, setup(options));
 module.exports = docrouter;
-
-
-
-
-
-
-
-
